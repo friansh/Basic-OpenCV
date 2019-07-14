@@ -27,7 +27,6 @@ while True:
 		cv2.rectangle(frame, (x, y), (x + w, y + h), (41, 163, 41), 1, cv2.LINE_AA)
 		roi = gray[x:x+w, y:y+h]
 		if len(roi) != 0:
-			cv2.imwrite("asd.jpg", roi)
 			id_, conf = recognizer.predict(roi)
 
 			if conf <= 85:

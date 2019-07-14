@@ -22,7 +22,6 @@ for x, y, w, h in faces:
     cv2.rectangle(img, (x, y), (x + w, y + h), (41, 163, 41), 2, cv2.LINE_AA)
     roi = gray[x:x + w, y:y + h]
     if len(roi) != 0:
-        cv2.imwrite("asd.jpg", roi)
         id_, conf = recognizer.predict(roi)
 
         if conf <= 85:

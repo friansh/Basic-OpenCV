@@ -17,19 +17,27 @@ with open("lables.pickle", 'rb') as f:
 cap = cv2.VideoCapture(0)
 
 while True:
-	_, frame = cap.read()
+	ret, frame = cap.read()
+
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-	faces = face_cascade.detectMultiScale(gray, 1.7, 2)
+	faces = face_cascade.detectMultiScale(gray, 1.5, minNeighbors= 10)
 
 	for x, y, w, h in faces:
-		cv2.rectangle(frame, (x,y),(x+w, y+h), (0, 255, 0), 1, cv2.LINE_AA)
-		roi_gray = gray[y:y + h, x:x + w]  # (ycord_start, ycord_end)
+		cv2.rectangle(frame, (x, y), (x + w, y + h), (41, 163, 41), 1, cv2.LINE_AA)
+		roi = gray[x:x+w, y:y+h]
+		if len(roi) != 0:
+			cv2.imwrite("asd.jpg", roi)
+			id_, conf = recognizer.predict(roi)
 
-		id_, conf = recognizer.predict(roi_gray)
+			if conf <= 85:
+				pad = 2
+				text_scale = 0.7
 
-		if conf <= 100:
-			cv2.putText(frame, labels[id_] + " " + str(round(conf)), (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 1, cv2.LINE_AA)
+				t_w, t_h = cv2.getTextSize(labels[id_] + " " + str(round(conf)), cv2.FONT_HERSHEY_SIMPLEX, text_scale, 1)[0]
+				cv2.rectangle(frame, (x, y + h), (x + t_w + 2 * pad, y + h + t_h + 2 * pad), (41, 163, 41), -1)
+				cv2.putText(frame, labels[id_] + " " + str(round(conf)), (x + pad, y + h + t_h + pad), cv2.FONT_HERSHEY_SIMPLEX, text_scale,
+							(255, 255, 255), 1, cv2.LINE_AA)
 
 	frame = cv2.putText(frame, str(datetime.datetime.now()), (0, frame.shape[0] - 10), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1, cv2.LINE_AA)
 	frame = cv2.putText(frame, "friansh.2k19", (0, 25), cv2.FONT_HERSHEY_COMPLEX, 0.7, (255, 255, 255), 1, cv2.LINE_AA)
